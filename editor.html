@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>DiscoBeat 채보 에디터</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="style.css" />
+<style>
+  body { overflow-y: auto; }
+  #app { height: auto; min-height: 100vh; }
+  .editor-wrap { max-width: 640px; margin: 0 auto; padding: 32px 20px; width: 100%; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+  .field input, .field select {
+    width: 100%; padding: 10px 12px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--bg-raised); color: var(--text); font-size: 14px;
+  }
+  .row { display: flex; gap: 12px; }
+  .row .field { flex: 1; }
+  .controls { display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap; }
+  .rec-status { font-size: 13px; color: var(--text-dim); margin-bottom: 10px; }
+  .rec-status.on { color: var(--miss); }
+  .keyhint { display: flex; gap: 8px; margin: 16px 0; }
+  .keyhint span {
+    flex: 1; text-align: center; padding: 14px; border-radius: 8px; font-family: 'Press Start 2P', monospace;
+    font-size: 14px; color: var(--bg);
+  }
+  .keyhint .d { background: var(--lane-d); } .keyhint .f { background: var(--lane-f); }
+  .keyhint .j { background: var(--lane-j); } .keyhint .k { background: var(--lane-k); }
+  .note-log { max-height: 220px; overflow-y: auto; background: var(--bg-raised); border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-size: 12px; font-family: monospace; }
+  .note-log div { display: flex; justify-content: space-between; padding: 2px 4px; }
+  textarea#output {
+    width: 100%; height: 220px; margin-top: 16px; background: var(--bg-raised); color: var(--text);
+    border: 1px solid var(--line); border-radius: 8px; padding: 10px; font-family: monospace; font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="editor-wrap">
+    <h1 class="pixel" style="font-size:16px;">채보 에디터</h1>
+    <div class="sub" style="color:var(--text-dim); font-size:13px; margin-bottom:20px;">
+      노래를 들으며 D · F · J · K 를 눌러 채보를 만든 뒤, JSON으로 내보내서 <b>/song add</b> 에 첨부하세요.
+    </div>
+
+    <div class="row">
+      <div class="field"><label>노래 id (영문/숫자)</label><input id="f-id" placeholder="my_song" /></div>
+      <div class="field"><label>제목</label><input id="f-title" placeholder="노래 제목" /></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>아티스트</label><input id="f-artist" placeholder="아티스트" /></div>
+      <div class="field"><label>BPM</label><input id="f-bpm" type="number" placeholder="120" /></div>
+      <div class="field"><label>난이도</label>
+        <select id="f-difficulty">
+          <option>Easy</option><option selected>Normal</option><option>Hard</option>
+        </select>
+      </div>
+    </div>
+    <div class="field">
+      <label>오디오 URL (선택, mp3/ogg 직링크 또는 유튜브 링크)</label>
+      <input id="f-audio" placeholder="https://.../song.mp3 또는 https://youtu.be/... (비워두면 무음으로 녹음)" />
+    </div>
+
+    <audio id="player" controls style="width:100%; margin-top:6px; display:none;"></audio>
+    <div id="yt-player-wrap" style="display:none; margin-top:6px;"><div id="yt-player"></div></div>
+
+    <div class="controls">
+      <button class="primary" id="btn-start">▶ 녹음 시작</button>
+      <button class="ghost" id="btn-stop" disabled>■ 정지</button>
+      <button class="ghost" id="btn-undo">되돌리기</button>
+      <button class="ghost" id="btn-clear">전체 삭제</button>
+    </div>
+    <div class="rec-status" id="rec-status">대기 중 - 녹음 시작을 누르면 타이밍 측정이 시작돼요.</div>
+
+    <hr style="border-color: var(--line); margin: 24px 0;" />
+
+    <h2 class="pixel" style="font-size:13px;">🔥 더 쉬운 방법 - 자동 생성</h2>
+    <div class="sub" style="color:var(--text-dim); font-size:13px; margin-bottom:14px;">
+      노래를 직접 들으며 키를 누를 필요 없이, BPM과 노래 길이만 입력하면 박자에 맞춰 노트를 자동으로 깔아줘요.
+    </div>
+    <div class="row">
+      <div class="field"><label>노래 길이 (초)</label><input id="auto-duration" type="number" placeholder="180" /></div>
+      <div class="field"><label>패턴 난이도</label>
+        <select id="auto-density">
+          <option value="1">쉬움 (한 박자마다 1개)</option>
+          <option value="2" selected>보통 (반 박자마다 1개)</option>
+          <option value="4">어려움 (4분박마다 1개)</option>
+        </select>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="primary" id="btn-autogen">🎲 자동으로 노트 채우기</button>
+    </div>
+
+    <hr style="border-color: var(--line); margin: 24px 0;" />
+
+    <div class="keyhint">
+      <span class="d">D</span><span class="f">F</span><span class="j">J</span><span class="k">K</span>
+    </div>
+
+    <div class="note-log" id="note-log"></div>
+
+    <div class="controls">
+      <button class="primary" id="btn-export">JSON으로 내보내기</button>
+      <button class="ghost" id="btn-copy">클립보드에 복사</button>
+    </div>
+    <textarea id="output" readonly placeholder="내보내기를 누르면 여기 JSON이 표시돼요"></textarea>
+  </div>
+</div>
+<script src="editor.js"></script>
+</body>
+</html>

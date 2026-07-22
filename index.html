@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<title>DiscoBeat</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="style.css?v=10" />
+</head>
+<body>
+<div id="app">
+
+  <!-- 곡 선택 화면 -->
+  <section id="menu-screen" class="screen active">
+    <h1 class="pixel">DISCOBEAT</h1>
+    <div class="sub">D · F · J · K 키로 즐기는 서버 전용 리듬게임</div>
+    <div id="song-list" class="song-list">
+      <div class="empty-state">노래를 불러오는 중...</div>
+    </div>
+  </section>
+
+  <!-- 게임 화면 -->
+  <section id="game-screen" class="screen">
+    <video id="bg-video" class="bg-video" autoplay loop muted playsinline></video>
+    
+    <div class="hud">
+      <div class="song-title" id="hud-title"></div>
+      <div class="score" id="hud-score">0</div>
+    </div>
+
+    <div class="healthbar-wrap">
+      <div class="avatar opponent" id="avatar-opponent">😈</div>
+      <div class="healthbar-track">
+        <div class="healthbar-fill" id="healthbar-fill"></div>
+        <div class="healthbar-marker" id="healthbar-marker"></div>
+      </div>
+      <div class="avatar player" id="avatar-player">🙂</div>
+    </div>
+
+    <div class="combo" id="hud-combo">0 COMBO</div>
+    <div class="judgment" id="judgment"></div>
+    <div id="yt-player-box" style="display:none;">
+      <div id="yt-player"></div>
+    </div>
+
+    <div class="lanes" id="lanes">
+      <div class="lane" data-lane="d"></div>
+      <div class="lane" data-lane="f"></div>
+      <div class="lane" data-lane="j"></div>
+      <div class="lane" data-lane="k"></div>
+      <div class="hit-line">
+        <div class="receptor d" data-lane="d">D</div>
+        <div class="receptor f" data-lane="f">F</div>
+        <div class="receptor j" data-lane="j">J</div>
+        <div class="receptor k" data-lane="k">K</div>
+      </div>
+    </div>
+
+    <div class="countdown" id="countdown" style="display:none;">3</div>
+  </section>
+
+  <!-- 게임 오버 화면 -->
+  <section id="gameover-screen" class="screen">
+    <h2 class="pixel" style="color:var(--miss); font-size:20px;">GAME OVER</h2>
+    <div class="sub" style="margin:10px 0 24px;">체력이 다 떨어졌어요...</div>
+    <button class="primary" id="gameover-retry-btn">다시 도전</button>
+    <button class="ghost" id="gameover-back-btn">곡 목록으로</button>
+  </section>
+
+  <!-- 결과 화면 -->
+  <section id="result-screen" class="screen">
+    <h2>RESULT</h2>
+    <div class="final-score pixel" id="result-score">0</div>
+    <div class="result-stats">
+      <div>SICK<b id="stat-sick">0</b></div>
+      <div>GOOD<b id="stat-good">0</b></div>
+      <div>BAD<b id="stat-bad">0</b></div>
+      <div>SHIT<b id="stat-shit">0</b></div>
+      <div>MISS<b id="stat-miss">0</b></div>
+      <div>MAX COMBO<b id="stat-max-combo">0</b></div>
+    </div>
+    <button class="primary" id="retry-btn">다시 플레이</button>
+    <button class="ghost" id="back-btn">곡 목록으로</button>
+  </section>
+
+</div>
+<script src="game.js?v=9"></script>
+</body>
+</html>
