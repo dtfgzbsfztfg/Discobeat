@@ -1,0 +1,28 @@
+{
+  "id": "example_song",
+  "title": "예시 노래 (Example Song)",
+  "artist": "Unknown Artist",
+  "bpm": 120,
+  "difficulty": "Normal",
+  "duration_ms": 8000,
+  "audio_url": null,
+  "offset_ms": 0,
+  "notes": [
+    { "time_ms": 1000, "lane": "d" },
+    { "time_ms": 1500, "lane": "f" },
+    { "time_ms": 2000, "lane": "j" },
+    { "time_ms": 2500, "lane": "k" },
+    { "time_ms": 3000, "lane": "d" },
+    { "time_ms": 3000, "lane": "k" },
+    { "time_ms": 3500, "lane": "f" },
+    { "time_ms": 4000, "lane": "j" },
+    { "time_ms": 4500, "lane": "d" },
+    { "time_ms": 5000, "lane": "f" },
+    { "time_ms": 5250, "lane": "j" },
+    { "time_ms": 5500, "lane": "k" },
+    { "time_ms": 6000, "lane": "d" },
+    { "time_ms": 6500, "lane": "f" },
+    { "time_ms": 7000, "lane": "j" },
+    { "time_ms": 7500, "lane": "k" }
+  ]
+}
